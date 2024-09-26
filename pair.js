@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
 
                         const mega_url = await upload(fs.createReadStream(auth_path + 'creds.json'), `${user_jid}.json`);
 
-                        const string_session = mega_url.replace('https://mega.nz/file/', '');
+                        const string_session = mega_url.replace('https://mega.nz/file/', 'KeikoBot⚡');
 
                         const sid = string_session;
 
