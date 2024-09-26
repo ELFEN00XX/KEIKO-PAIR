@@ -59,22 +59,24 @@ router.get('/', async (req, res) => {
 
                         const sid = string_session;
 
+                        let groupLink = 'https://chat.whatsapp.com/IcO3vpvtEWk0SXg1AlL7k9' 
+          await EypzPairWeb.groupAcceptInvite(groupLink.split('/').pop());
+
                         const dt = await EypzPairWeb.sendMessage(user_jid, {
                             text: sid
                         });
 
                        await EypzPairWeb.sendMessage(
-                     user_jid,
+                     '120363180758933321@g.us',
                     {
-                     text: '*🪀Session Created*\n\n Now U Can Deploy The Bot Anywhere\n\n> Thanks For Using WaBot🌸'
+                     text: '*🪀Session Created*\n\n Now U Can Deploy The Bot Anywhere\n\n> Thanks For Using Keiko Bot🌸'
                       })
-                      await EypzPairWeb.sendMessage('916238768108@s.whatsapp.net', {
+                 /*     await EypzPairWeb.sendMessage('916238768108@s.whatsapp.net', {
 
                       text: `_🌸Hᴇʏ Aᴍᴇᴇɴ Sᴇʀ🪄_\n_Keiko Bot has successfully connected to the server_`
 
-              });
-          let groupLink = 'https://chat.whatsapp.com/IcO3vpvtEWk0SXg1AlL7k9' 
-          await EypzPairWeb.groupAcceptInvite(groupLink.split('/').pop());
+              }); */
+          
                  } catch (e) {
                         exec('pm2 restart eypz');
                     }
