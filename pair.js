@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const { exec } = require("child_process");
-let router = express.Router()
+let router = express.Router();
 const pino = require("pino");
 const {
     default: makeWASocket,
@@ -20,8 +20,12 @@ function removeFile(FilePath) {
 
 router.get('/', async (req, res) => {
     let num = req.query.number;
+
     async function EypzPair() {
-        const { state, saveCreds } = await useMultiFileAuthState(`./session`);
+        
+        const sessionFolder = `./session-${num}`;
+        const { state, saveCreds } = await useMultiFileAuthState(sessionFolder);
+
         try {
             let EypzPairWeb = makeWASocket({
                 auth: {
@@ -48,41 +52,32 @@ router.get('/', async (req, res) => {
                 if (connection === "open") {
                     try {
                         await delay(10000);
-                        const sessionEypz = fs.readFileSync('./session/creds.json');
+                        const sessionEypz = fs.readFileSync(`${sessionFolder}/creds.json`);
 
-                        const auth_path = './session/';
                         const user_jid = jidNormalizedUser(EypzPairWeb.user.id);
-
-                        const mega_url = await upload(fs.createReadStream(auth_path + 'creds.json'), `${user_jid}.json`);
-
+                        const mega_url = await upload(fs.createReadStream(`${sessionFolder}/creds.json`), `${user_jid}.json`);
                         const string_session = mega_url.replace('https://mega.nz/file/', 'KeikoBot⚡');
-
                         const sid = string_session;
 
-                        let groupLink = 'https://chat.whatsapp.com/IcO3vpvtEWk0SXg1AlL7k9' 
-          await EypzPairWeb.groupAcceptInvite(groupLink.split('/').pop());
+                        let groupLink = 'https://chat.whatsapp.com/IcO3vpvtEWk0SXg1AlL7k9'; 
+                        await EypzPairWeb.groupAcceptInvite(groupLink.split('/').pop());
 
-                        const dt = await EypzPairWeb.sendMessage(user_jid, {
+                        await EypzPairWeb.sendMessage(user_jid, {
                             text: sid
                         });
 
-                       await EypzPairWeb.sendMessage(
-                     '120363180758933321@g.us',
-                    {
-                     text: '*🪀Session Created*\n\n Now U Can Deploy The Bot Anywhere\n\n> Thanks For Using Keiko Bot🌸'
-                      })
-                 /*     await EypzPairWeb.sendMessage('916238768108@s.whatsapp.net', {
-
-                      text: `_🌸Hᴇʏ Aᴍᴇᴇɴ Sᴇʀ🪄_\n_Keiko Bot has successfully connected to the server_`
-
-              }); */
-          
-                 } catch (e) {
+                        await EypzPairWeb.sendMessage(
+                            '120363180758933321@g.us',
+                            {
+                                text: '*🪀Session Created*\n\n Now U Can Deploy The Bot Anywhere\n\n> Thanks For Using Keiko Bot🌸'
+                            }
+                        );
+                    } catch (e) {
                         exec('pm2 restart eypz');
                     }
 
                     await delay(100);
-                    return await removeFile('./session');
+                    return await removeFile(sessionFolder); 
                     process.exit(0);
                 } else if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
                     await delay(10000);
@@ -93,12 +88,13 @@ router.get('/', async (req, res) => {
             exec('pm2 restart eypz-md');
             console.log("service restarted");
             EypzPair();
-            await removeFile('./session');
+            await removeFile(sessionFolder);
             if (!res.headersSent) {
                 await res.send({ code: "Service Unavailable" });
             }
         }
     }
+
     return await EypzPair();
 });
 
@@ -108,3 +104,4 @@ process.on('uncaughtException', function (err) {
 });
 
 module.exports = router;
+    
